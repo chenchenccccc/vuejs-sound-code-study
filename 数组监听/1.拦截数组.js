@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-12 19:17:58
- * @LastEditTime: 2021-05-12 22:16:29
+ * @LastEditTime: 2021-05-12 23:01:59
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \数组监听\1.拦截数组.js
@@ -14,6 +14,7 @@ let changArrayMethods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'r
 const arrayProto = Array.prototype;
 
 const arrayMethods = Object.create(arrayProto);
+console.log(arrayMethods, 'arrayMethods');
 
 // 使用 Object.defineProperty 进行拦截
 
@@ -22,7 +23,7 @@ changArrayMethods.forEach(method => {
   const originalMethod = arrayProto[method];
   Object.defineProperty(arrayMethods, method, {
     value: function mutator(...args) {
-      console.log(args);
+      console.log(args, 'args');
       return originalMethod.apply(this, args);
     },
     enumerable: false,
@@ -47,12 +48,39 @@ function parsePath(path) {
   };
 }
 
+// 判断是否 __proto__是否可用
+
+const hasProto = '__proto__' in {};
+
+function protoAugment(target, src, keys) {
+  target.__proto__ = src;
+}
+
+function copyAugment(target, src, keys) {
+  for (let index = 0; index < keys.length; index++) {
+    const key = keys[index];
+    def(target, key, src[key]);
+  }
+}
+
+function dep(target, key, value, enumerable) {
+  Object.defineProperty(target, key, {
+    value,
+    enumerable: !!enumerable,
+    configurable: true,
+    writable: true
+  });
+}
+
+const arrayKeys = Object.getOwnPropertyNames(arrayMethods);
+
 // 收集数组的依赖
 class Observe {
   constructor(value) {
     this.value = value;
     if (Array.isArray(value)) {
-      value.__proto__ = arrayMethods;
+      const augment = hasProto ? protoAugment : copyAugment;
+      augment(value, arrayMethods, arrayKeys);
     } else {
       this.walk(value);
     }
@@ -98,7 +126,7 @@ let a = {
   c: '2'
 };
 
-new Observe(a);
+new Observe(arr);
 a.c = 1;
 //赋值新的
 Object.defineProperty(a, 'd', {
