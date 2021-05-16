@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-12 19:17:58
- * @LastEditTime: 2021-05-12 23:01:59
+ * @LastEditTime: 2021-05-16 14:34:22
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \数组监听\1.拦截数组.js
@@ -14,7 +14,6 @@ let changArrayMethods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'r
 const arrayProto = Array.prototype;
 
 const arrayMethods = Object.create(arrayProto);
-console.log(arrayMethods, 'arrayMethods');
 
 // 使用 Object.defineProperty 进行拦截
 
@@ -23,7 +22,6 @@ changArrayMethods.forEach(method => {
   const originalMethod = arrayProto[method];
   Object.defineProperty(arrayMethods, method, {
     value: function mutator(...args) {
-      console.log(args, 'args');
       return originalMethod.apply(this, args);
     },
     enumerable: false,
@@ -32,7 +30,7 @@ changArrayMethods.forEach(method => {
   });
 });
 
-// 用来解析 a.b.c 递归监听
+// 递归解析参数
 function parsePath(path) {
   const pathReg = /[^\w.$]/;
   if (pathReg.test(path)) {
@@ -52,10 +50,11 @@ function parsePath(path) {
 
 const hasProto = '__proto__' in {};
 
+// 直接修改目标的__proto__
 function protoAugment(target, src, keys) {
   target.__proto__ = src;
 }
-
+// 在目标 上添加方法
 function copyAugment(target, src, keys) {
   for (let index = 0; index < keys.length; index++) {
     const key = keys[index];
@@ -63,7 +62,7 @@ function copyAugment(target, src, keys) {
   }
 }
 
-function dep(target, key, value, enumerable) {
+function def(target, key, value, enumerable) {
   Object.defineProperty(target, key, {
     value,
     enumerable: !!enumerable,
@@ -72,6 +71,7 @@ function dep(target, key, value, enumerable) {
   });
 }
 
+// 获取已经通过Object.defineProperty拦截的方法
 const arrayKeys = Object.getOwnPropertyNames(arrayMethods);
 
 // 收集数组的依赖
