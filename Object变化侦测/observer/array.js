@@ -1,13 +1,14 @@
 /*
  * @Author: your name
  * @Date: 2021-05-17 21:29:19
- * @LastEditTime: 2021-05-17 22:31:57
+ * @LastEditTime: 2021-05-19 17:42:39
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vuejs-sound-code-study\Object变化侦测\发布订阅\array.js
  */
 
-import { def } from './util';
+// import { def } from './util';
+const { def } = require("./util/index.js")
 // 改变数组的7个方法
 let methodsToPatch = ['splice', 'sort', 'unshift', 'shift', 'push', 'pop', 'reverse'];
 
