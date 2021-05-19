@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-17 21:32:23
- * @LastEditTime: 2021-05-19 17:55:29
+ * @LastEditTime: 2021-05-19 20:24:51
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vuejs-sound-code-study\Object变化侦测\发布订阅\util\index.js
@@ -66,7 +66,7 @@ _Set = (function () {
 const bailRE = /[^\w.$]/
 
 function parsePath(path) {
-  if (bailRE.test(test)) {
+  if (bailRE.test(path)) {
     return
   }
   let segments = path.split('.')

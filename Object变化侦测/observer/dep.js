@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-17 21:29:04
- * @LastEditTime: 2021-05-17 22:52:45
+ * @LastEditTime: 2021-05-19 22:16:22
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vuejs-sound-code-study\Object变化侦测\发布订阅\dep.js
@@ -10,8 +10,8 @@
 
 // require { remove } from './util/index';
 const { remove } = require('./util/index.js');
+const { Watcher } = require('./watcher.js');
 let uid = 0;
-
 class Dep {
   constructor() {
     this.id = uid++;
@@ -27,8 +27,9 @@ class Dep {
   }
   //处理依赖 ？
   depend() {
+    // console.log(Dep.target.addDep,'2222')
     if (Dep.target) {
-      Dep.target.addSub(this);
+      Dep.target.addDep(this);
     }
   }
   notify() {
@@ -36,7 +37,7 @@ class Dep {
     const subs = this.subs.slice();
     //循环dep触发收集的依赖
     for (let index = 0; index < subs.length; index++) {
-      subs[index].updated();
+      subs[index].update();
     }
   }
 }
@@ -51,13 +52,17 @@ const targetStack = [];
 function pushTarget(target) {
   targetStack.push(target);
   Dep.target = target;
+  // console.log(Dep,'Dep--')
 }
 
 function popTarget() {
   targetStack.pop();
   Dep.target = targetStack[targetStack.length - 1];
-}
 
-module.exports.popTarget = popTarget;
-module.exports.pushTarget = pushTarget;
-module.exports.Dep = Dep;
+}
+const exportsData = {
+  pushTarget,
+  popTarget,
+  Dep
+};
+module.exports = exportsData;

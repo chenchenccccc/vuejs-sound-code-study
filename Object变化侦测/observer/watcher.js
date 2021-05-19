@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-17 21:29:27
- * @LastEditTime: 2021-05-18 00:01:39
+ * @LastEditTime: 2021-05-19 22:08:36
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vuejs-sound-code-study\Object变化侦测\发布订阅\watcher.js
@@ -10,7 +10,7 @@
 const { traverse } = require('./traverse');
 const { _Set } = require('./util/index.js');
 const { parsePath } = require('./util/index.js');
-const { Dep, popTarget, pushTarget } = require('./dep.js');
+const { Dep, pushTarget, popTarget } = require('./dep.js');
 
 let uid = 0;
 
@@ -38,16 +38,18 @@ class Watcher {
     const vm = this.vm;
     try {
       value = this.getter.call(vm, vm);
+      console.log('try');
     } catch {
-      console.log(e, vm, 'getter for watcher');
+      console.log('catch');
     } finally {
       //如果deep为true则是深度监听 就把所有的子值全部侦测起来
+      console.log(this.deep);
       if (this.deep) {
         traverse(value);
       }
       // ???
-      popTarget();
-      this.cleanupDeps();
+      // popTarget();
+      // this.cleanupDeps();
     }
     return value;
   }
@@ -57,12 +59,17 @@ class Watcher {
       this.newDepIds.add(id);
       this.newDeps.push(id);
       if (!this.depIds.has(id)) {
-        dep.addDep(this);
+        dep.addSub(this);
       }
     }
   }
   update() {
     console.log('updated');
+    const value = this.get();
+    const oldValue = this.value;
+    this.value = value;
+
+    this.cb.call(this.vm, value, oldValue);
   }
   depend() {
     let i = this.deps.length;

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-05 21:54:21
- * @LastEditTime: 2021-05-16 15:05:46
+ * @LastEditTime: 2021-05-19 21:07:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue源码研究\Object变化侦测\watch收集依赖.js
@@ -14,7 +14,6 @@ let data = {
 };
 function defineReactive(data, key, value) {
   let dep = new Dep();
-  console.log(dep);
   Object.defineProperty(data, key, {
     enumerable: true,
     configurable: true,
